@@ -1,0 +1,18 @@
+{
+    "mqtt_server": "mqtt",
+    "mqtt_user": "mosquitto",
+    "mqtt_pwd": "mypathword",
+    "device_id": "tpad",
+    "refresh_interval": 45,
+    "sensors": {
+        "battery1_percent": {
+            "topic": "battery1_percent"
+        },
+        "battery2_percent": {
+            "topic": "battery2_percent"
+        },
+        "battery_state": {
+            "topic": "battery_state"
+        }
+    }
+}
