@@ -1,7 +1,10 @@
 # SENSOR_MQTT
 
-Programme python qui va lire le niveau des batteries et son état "charging/discharging"
+Programme python avec l'extension mqtt 
+pour lire qui va lire le niveau des batteries et l'état "charging/discharging"
+de mon pc portable.
 
+Dans un 2ème temps via Home Assistant, je pilote le chargeur en fonction du niveau des batteries.
 
 ## Configuration
 
@@ -100,3 +103,52 @@ sensor:
       model: "Thinkpad T480"    
 ```
 ![](home_assistant.png)
+
+## Automation
+![](automation.png)
+
+```yaml
+- id: '1715099533783'
+  alias: Chargeur Thinkpad ON
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.mon_thinkpad_tpad_batterie_1
+    below: 20
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.mon_thinkpad_tpad_batterie_2
+    below: 20
+  - condition: state
+    entity_id: sensor.mon_thinkpad_tpad_batterie_state
+    state: discharging
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id:
+      - switch.relate_relais
+    data: {}
+  mode: single
+- id: '1715099899234'
+  alias: Chargeur Thinkpad OFF
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.mon_thinkpad_tpad_batterie_2
+    above: 80
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.mon_thinkpad_tpad_batterie_2
+    above: 80
+  - condition: state
+    entity_id: sensor.mon_thinkpad_tpad_batterie_state
+    state: charging
+  action:
+  - service: switch.turn_off
+    target:
+      entity_id: switch.relate_relais
+    data: {}
+  mode: single
+```
