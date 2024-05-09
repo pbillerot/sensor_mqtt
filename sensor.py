@@ -31,32 +31,32 @@ client.connect(config["mqtt_server"], 1883, 60)
 
 client.loop_start()
 
-state = ""
-percent1 = 0
-percent2 = 0
 while True:
     # charging / discharging
     data = psutil.sensors_battery()
     if data is not None:
         if data.power_plugged:
             state = "charging"
+            sensor_publish(config["sensors"]["battery_state"]["topic"], state)
         else:
             state = "discharging"
-    sensor_publish(config["sensors"]["battery_state"]["topic"], state)
+            sensor_publish(config["sensors"]["battery_state"]["topic"], state)
 
     # percent battery
-    # data = psutil.sensors_battery()
-    f = open('/sys/class/power_supply/BAT0/capacity')
-    percent1 = round(int(f.read().strip('\n')))
-    f.close()
-    if percent1 is not None:
-        sensor_publish(config["sensors"]["battery1_percent"]["topic"], percent1)
-
-    f = open('/sys/class/power_supply/BAT1/capacity')
-    percent2 = round(int(f.read().strip('\n')))
-    f.close()
-    if percent2 is not None:
-        sensor_publish(config["sensors"]["battery2_percent"]["topic"], percent2)
+    try:
+        # batterie 1    
+        f = open('/sys/class/power_supply/BAT0/capacity')
+        bat0 = int(f.read().strip('\n'))
+        f.close()
+        # batterie 1    
+        f = open('/sys/class/power_supply/BAT1/capacity')
+        bat1 = int(f.read().strip('\n'))
+        f.close()
+        # moyenne
+        percent = round((bat0+bat1)/2)
+        sensor_publish(config["sensors"]["battery_percent"]["topic"], percent)
+    except Exception as inst:
+        print (inst)
 
     time.sleep(config["refresh_interval"])
 

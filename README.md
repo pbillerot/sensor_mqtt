@@ -51,6 +51,7 @@ Description=Sensor MQTT
 After=networking.target
 
 [Service]
+User=billerot
 WorkingDirectory=/home/billerot/dev/sensor_mqtt/
 ExecStart=/usr/bin/python3 -m sensor
 Restart=always
@@ -64,9 +65,17 @@ WantedBy=default.target
 sudo cp /home/billerot/dev/sensor_mqtt/sensor_mqtt.service /etc/systemd/system/sensor_mqtt.service
 sudo systemctl start sensor_mqtt
 sudo systemctl enable sensor_mqtt
+
+sudo systemctl stop sensor_mqtt
+sudo systemctl disable sensor_mqtt
+
+sudo rm /etc/systemd/system/sensor_mqtt
+sudo systemctl daemon-reload
 ```
 
 ## Déclaration dans Home Assistant
+![](images/ha-device.png)
+![](images/ha-device-icmp.png)
 
 ```yaml
 # mqtt.yaml
@@ -102,27 +111,19 @@ sensor:
       manufacturer: "Lenovo"
       model: "Thinkpad T480"    
 ```
-![](home_assistant.png)
 
 ## Automation
-![](automation.png)
 
 ```yaml
-- id: '1715099533783'
-  alias: Chargeur Thinkpad ON
+- id: '1715241162691'
+  alias: Chargeur Thinkpad démarrer
   description: ''
   trigger:
   - platform: numeric_state
     entity_id:
-    - sensor.mon_thinkpad_tpad_batterie_1
+    - sensor.mon_thinkpad_tpad_batterie
     below: 20
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.mon_thinkpad_tpad_batterie_2
-    below: 20
-  - condition: state
-    entity_id: sensor.mon_thinkpad_tpad_batterie_state
-    state: discharging
+  condition: []
   action:
   - service: switch.turn_on
     target:
@@ -130,25 +131,37 @@ sensor:
       - switch.relate_relais
     data: {}
   mode: single
-- id: '1715099899234'
-  alias: Chargeur Thinkpad OFF
+- id: '1715241449697'
+  alias: Chargeur Thinkpad arrêter
   description: ''
   trigger:
   - platform: numeric_state
     entity_id:
-    - sensor.mon_thinkpad_tpad_batterie_2
-    above: 80
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.mon_thinkpad_tpad_batterie_2
-    above: 80
-  - condition: state
-    entity_id: sensor.mon_thinkpad_tpad_batterie_state
-    state: charging
+    - sensor.mon_thinkpad_tpad_batterie
+    above: 85
+  condition: []
   action:
   - service: switch.turn_off
+    metadata: {}
+    data: {}
     target:
       entity_id: switch.relate_relais
+  mode: single
+- id: '1715245232196'
+  alias: Chargeur Thinkpad arrêt si non détecté
+  description: ''
+  trigger:
+  - type: not_connected
+    platform: device
+    device_id: afdc2baad7d9b1c2bd399e40aa27443b
+    entity_id: cb6a0e8342de05c377e4b89eba903e35
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: switch.turn_off
+    metadata: {}
     data: {}
+    target:
+      entity_id: switch.relate_relais
   mode: single
 ```

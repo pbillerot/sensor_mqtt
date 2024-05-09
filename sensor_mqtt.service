@@ -4,6 +4,7 @@ Description=Sensor MQTT
 After=networking.target
 
 [Service]
+User=billerot
 WorkingDirectory=/home/billerot/dev/sensor_mqtt/
 ExecStart=/usr/bin/python3 -m sensor
 Restart=always
