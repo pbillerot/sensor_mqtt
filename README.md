@@ -45,20 +45,20 @@ python3 sensor.py
 ## Installation du service
 
 ```ini
-# sensor_mqtt.service
+# sensor_mqtt.service à recopier dans /etc/systemd/system/
 [Unit]
 Description=Sensor MQTT
 After=networking.target
 
 [Service]
-User=billerot
+TimeoutSec=infinity
 WorkingDirectory=/home/billerot/dev/sensor_mqtt/
 ExecStart=/usr/bin/python3 -m sensor
 Restart=always
 RestartSec=30
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 ```
 
 ```shell
