@@ -1,10 +1,9 @@
 # SENSOR_MQTT
 
 Programme python avec l'extension mqtt 
-pour lire qui va lire le niveau des batteries et l'état "charging/discharging"
-de mon pc portable.
+pour lire le niveau et l'état des batteries de mon pc portable.
 
-Dans un 2ème temps via Home Assistant, je pilote le chargeur en fonction du niveau des batteries.
+Via Home Assistant, je pilote le chargeur en fonction du niveau des batteries.
 
 ## Configuration
 
@@ -18,11 +17,8 @@ Configuration définie dans le `config.json`
     "device_id": "tpad",
     "refresh_interval": 45,
     "sensors": {
-        "battery1_percent": {
-            "topic": "battery1_percent"
-        },
-        "battery2_percent": {
-            "topic": "battery2_percent"
+        "battery_percent": {
+            "topic": "battery_percent"
         },
         "battery_state": {
             "topic": "battery_state"
@@ -51,7 +47,7 @@ Description=Sensor MQTT
 After=networking.target
 
 [Service]
-TimeoutSec=infinity
+TimeoutSec=infinity # ne bloque plus la mise en veille
 WorkingDirectory=/home/billerot/dev/sensor_mqtt/
 ExecStart=/usr/bin/python3 -m sensor
 Restart=always
@@ -61,6 +57,7 @@ RestartSec=30
 WantedBy=multi-user.target
 ```
 
+Aide mémoire des commandes pour installer / mettre à jour / supprimer le service
 ```shell
 sudo cp /home/billerot/dev/sensor_mqtt/sensor_mqtt.service /etc/systemd/system/sensor_mqtt.service
 sudo systemctl start sensor_mqtt
@@ -74,31 +71,22 @@ sudo systemctl daemon-reload
 ```
 
 ## Déclaration dans Home Assistant
-![](images/ha-device.png)
-![](images/ha-device-icmp.png)
+
+![](images/ha-sensor.png)
+![](images/ha-icmp.png)
+![](images/ha-lovelace.png)
 
 ```yaml
 # mqtt.yaml
 sensor:
-  - name: "TPAD Batterie 1"
-    state_topic: battery1_percent
-    unique_id: battery1_percent
+  - name: "TPAD Batterie"
+    state_topic: battery_percent
+    unique_id: battery_percent
     state_class: measurement
     unit_of_measurement: "%"
     device_class: battery
     device:
-      name: "Mon portable"
-      identifiers: "tpad"
-      manufacturer: "Lenovo"
-      model: "Thinkpad T480"    
-  - name: "TPAD Batterie 2"
-    state_topic: battery2_percent
-    unique_id: battery2_percent
-    state_class: measurement
-    unit_of_measurement: "%"
-    device_class: battery
-    device:
-      name: "Mon portable"
+      name: "Mon Thinkpad"
       identifiers: "tpad"
       manufacturer: "Lenovo"
       model: "Thinkpad T480"    
@@ -106,7 +94,7 @@ sensor:
     state_topic: battery_state
     unique_id: battery_state
     device:
-      name: "Mon portable"
+      name: "Mon Thinkpad"
       identifiers: "tpad"
       manufacturer: "Lenovo"
       model: "Thinkpad T480"    
