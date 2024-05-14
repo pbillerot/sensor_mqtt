@@ -5,6 +5,8 @@ pour lire le niveau et l'état des batteries de mon pc portable.
 
 Via Home Assistant, je pilote le chargeur en fonction du niveau des batteries.
 
+Possibilité de piloter la mise en veille et l'arrêt du portable.
+
 ## Configuration
 
 Configuration définie dans le `config.json`
@@ -100,6 +102,13 @@ sensor:
       identifiers: "tpad"
       manufacturer: "Lenovo"
       model: "Thinkpad T480"    
+button:
+  - name: "Mettre en veille"
+    command_topic: "tpad/command"
+    payload_press: "systemctl suspend"
+  - name: "Arrêter le système"
+    command_topic: "tpad/command"
+    payload_press: "systemctl poweroff"
 ```
 
 ## Automation
