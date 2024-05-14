@@ -29,6 +29,8 @@ Configuration définie dans le `config.json`
 
 ## Installation de l'application
 
+https://pypi.org/project/paho-mqtt/
+
 ```shell
 sudo apt install python3-paho-mqtt
 ```
