@@ -17,6 +17,7 @@ Configuration définie dans le `config.json`
     "mqtt_user": "mosquitto",
     "mqtt_pwd": "mypathword",
     "device_id": "tpad",
+    "subscribe_topic": "tpad/command",
     "refresh_interval": 45,
     "sensors": {
         "battery_percent": {
